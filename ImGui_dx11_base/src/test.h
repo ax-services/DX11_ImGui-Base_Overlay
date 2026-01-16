@@ -6,11 +6,12 @@
 void menu_test() {
 
 	ImGui::Begin("Test Window");
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 0.7f)); // Set background color with alpha for transparency
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 0.7f));
 
 	ImGui::Text("This is a test window.");
 	ImGui::Text("You can add more UI elements here.");
 	ImGui::PopStyleColor();
 
 	ImGui::End();
+
 }
