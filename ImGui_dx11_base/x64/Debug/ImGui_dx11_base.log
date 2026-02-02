@@ -8,4 +8,4 @@
   main.cpp
   Code wird generiert...
 MSVCRTD.lib(exe_main.obj) : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "main" in Funktion ""int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)".
-C:\Users\Vincent\Desktop\ax-services.net\DX11_ImGui-Base\x64\Debug\ImGui_dx11_base.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+C:\Users\Vincent\Desktop\Neuer Ordner\x64\Debug\ImGui_dx11_base.exe : fatal error LNK1120: 1 nicht aufgelöste Externe

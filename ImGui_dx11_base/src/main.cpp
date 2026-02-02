@@ -1,4 +1,3 @@
-// Transparent DirectX11 ImGui Overlay Beispiel
 #include "../ext/imgui.h"
 #include "../ext/imgui_impl_win32.h"
 #include "../ext/imgui_impl_dx11.h"
@@ -7,33 +6,27 @@
 #include <tchar.h>
 #pragma comment(lib, "d3d11.lib")
 
-// DirectX11 Variablen
 static ID3D11Device* g_pd3dDevice = nullptr;
 static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain* g_pSwapChain = nullptr;
 static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
 static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
 
-// Forward declarations
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Entry Point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-    // Fensterklasse registrieren
 
     WNDCLASSEXW wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"OverlayExample", nullptr };
     ::RegisterClassExW(&wc);
 
-    // Bildschirmgröße
     int screen_width = GetSystemMetrics(SM_CXSCREEN);
     int screen_height = GetSystemMetrics(SM_CYSCREEN);
 
-    // Fenster erstellen (Fullscreen Overlay)
     HWND hwnd = ::CreateWindowW(
         wc.lpszClassName,
         L"ImGui Overlay",
@@ -42,14 +35,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         nullptr, nullptr, wc.hInstance, nullptr
     );
 
-    // Layered Window Stil für Transparenz + immer oben
     LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
     SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TOPMOST);
 
-    // ColorKey auf Schwarz setzen (0,0,0) = durchsichtig
     SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
-    // Direkt3D initialisieren
     if (!CreateDeviceD3D(hwnd) || !g_pd3dDevice || !g_pd3dDeviceContext)
     {
         CleanupDeviceD3D();
@@ -57,25 +47,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         return 1;
     }
 
-    // Fenster anzeigen
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
 
-    // ImGui Setup
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui::StyleColorsDark();
 
-    // ImGui Fenster-Hintergrund leicht sichtbar machen
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg].w = 0.8f;
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-    // Main loop
     bool done = false;
     while (!done)
     {
@@ -89,7 +75,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         }
         if (done) break;
 
-        // Handle resize
         if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
         {
             CleanupRenderTarget();
@@ -98,7 +83,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
             CreateRenderTarget();
         }
 
-        // Start ImGui Frame
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
@@ -111,10 +95,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        g_pSwapChain->Present(1, 0); // VSync
+        g_pSwapChain->Present(0, 0); // VSync
     }
 
-    // Cleanup
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
@@ -125,7 +108,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
     return 0;
 }
 
-// -------------------- Helper Functions --------------------
 
 bool CreateDeviceD3D(HWND hWnd)
 {
@@ -178,7 +160,6 @@ void CleanupRenderTarget()
     if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
 }
 
-// -------------------- Win32 WndProc --------------------
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -196,7 +177,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) return 0; // Disable ALT
+        if ((wParam & 0xfff0) == SC_KEYMENU) return 0; 
         break;
     case WM_DESTROY:
         ::PostQuitMessage(0);
